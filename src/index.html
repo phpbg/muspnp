@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self';script-src 'unsafe-eval' 'self';img-src *">
+    <title>MusPNP</title>
+    <link rel="stylesheet" href="index.css">
+    <link rel="stylesheet" href="spinner.css">
+</head>
+<body>
+<div id="app" v-cloak>
+    <div id="title">
+        <h1>MusPnP</h1>
+        <div class="lds-ring" v-show="showSpinner">
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+        </div>
+    </div>
+    <div id="error" v-if="error">{{ error }}</div>
+    <div id="devices">
+        <select v-model="currentMediaServer">
+            <option disabled value="">Select source</option>
+            <option v-for="device in availableMediaServers" :value="device">{{ device.name }}</option>
+        </select>
+        <select v-model="currentMediaRenderer">
+            <option disabled value="">Select renderer</option>
+            <option v-for="device in availableMediaRenderers" :value="device">{{ device.name }}</option>
+        </select>
+    </div>
+
+    <div id="controls" v-if="currentMediaRenderer">
+        <div>
+            <button v-show="isPaused || isStopped || isPending" :disabled="isPending || !isPaused" @click="resume" class="standardized-emoji icon">&#x25B6;️️</button>
+            <button v-show="isPlaying" :disabled="isPending" @click="pause" class="standardized-emoji icon">️️&#x23F8;</button>
+            <button :disabled="isPending || isStopped" @click="stop" class="standardized-emoji icon">&#x23F9;</button>
+        </div>
+        <div id="bars">
+            <div id="progress">
+                <progress max="100" :value="currentPositionPercent" @click="seek"></progress>
+                <div>
+                    <div>{{ currentPositionProgress }}</div>
+                    <div>-{{ currentPositionRemaining }}</div>
+                </div>
+            </div>
+            <div id="volume" v-if="currentVolume != null">
+                <span>🔈</span>
+                <progress max="100" :value="currentVolume" @click="setVolume"></progress>
+                <span>🔊</span>
+            </div>
+        </div>
+    </div>
+    <h2 v-if="currentMediaServer">
+        <button @click="back" :disabled="currentContainer == null" class="standardized-emoji icon">⬅️</button>
+        <span v-if="currentContainer">{{ currentContainer['dc:title'] }}</span>
+        <span v-if="!currentContainer">{{ currentMediaServer.name }}</span>
+    </h2>
+    <ol id="libraryObjects" v-if="libraryObjects">
+        <li v-for="item in libraryObjects" @click="selectItem(item)"
+            :class="{ playing: item['@_id'] === currentPlayingItem?.['@_id'] }">
+            <div class="icon .standardized-emoji" v-if="!item['upnp:albumArtURI']">{{ item | toIcon }}</div>
+            <img class="icon icon-size" v-if="item['upnp:albumArtURI']" :src="item['upnp:albumArtURI']['#text']" :alt="$options.filters.toIcon(item)"/>
+            <div>
+                <div>{{ item['dc:title'] }}</div>
+                <div class="font-italic font-xsmall" v-if="item['upnp:artist'] || item['upnp:album']">
+                    {{ item['upnp:artist'] }} - {{ item['upnp:album'] }}
+                </div>
+            </div>
+        </li>
+    </ol>
+</div>
+<script src="../node_modules/dayjs/dayjs.min.js"></script>
+<script src="../node_modules/dayjs/plugin/duration.js"></script>
+<script type="module" src="index.js"></script>
+</body>
+</html>

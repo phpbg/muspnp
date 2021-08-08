@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<root xmlns="urn:schemas-upnp-org:device-1-0">
+    <specVersion>
+        <major>1</major>
+        <minor>0</minor>
+    </specVersion>
+    <device>
+        <deviceType>urn:schemas-upnp-org:device:MediaServer:1</deviceType>
+        <friendlyName>H3113</friendlyName>
+        <manufacturer>PlainUPnP</manufacturer>
+        <manufacturerURL>https://github.com/m3sv/PlainUPnP</manufacturerURL>
+        <modelDescription>https://github.com/m3sv/PlainUPnP</modelDescription>
+        <modelName>PlainUPnP</modelName>
+        <modelNumber>2.1.0</modelNumber>
+        <modelURL>https://github.com/m3sv/PlainUPnP</modelURL>
+        <serialNumber>2.8.2</serialNumber>
+        <UDN>uuid:4b8474d4-741b-4be3-9c9f-4879bbb7183f</UDN>
+        <UPC>2.8.2</UPC>
+        <iconList>
+            <icon>
+                <mimetype>image/png</mimetype>
+                <width>128</width>
+                <height>128</height>
+                <depth>32</depth>
+                <url>/upnp/dev/4b8474d4-741b-4be3-9c9f-4879bbb7183f/plainupnp-icon</url>
+            </icon>
+        </iconList>
+        <serviceList>
+            <service>
+                <serviceType>urn:schemas-upnp-org:service:ContentDirectory:1</serviceType>
+                <serviceId>urn:upnp-org:serviceId:ContentDirectory</serviceId>
+                <SCPDURL>/upnp/dev/4b8474d4-741b-4be3-9c9f-4879bbb7183f/svc/upnp-org/ContentDirectory/desc</SCPDURL>
+                <controlURL>/upnp/dev/4b8474d4-741b-4be3-9c9f-4879bbb7183f/svc /upnp-org/ContentDirectory/action</controlURL>
+                <eventSubURL>/upnp/dev/4b8474d4-741b-4be3-9c9f-4879bbb7183f/svc/upnp-org/ContentDirectory/event</eventSubURL>
+            </service>
+        </serviceList>
+    </device>
+</root>

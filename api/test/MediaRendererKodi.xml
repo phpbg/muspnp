@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<root configId="11585499" xmlns="urn:schemas-upnp-org:device-1-0" xmlns:dlna="urn:schemas-dlna-org:device-1-0">
+    <specVersion>
+        <major>1</major>
+        <minor>1</minor>
+    </specVersion>
+    <device>
+        <deviceType>urn:schemas-upnp-org:device:MediaRenderer:1</deviceType>
+        <friendlyName>tv</friendlyName>
+        <manufacturer>XBMC Foundation</manufacturer>
+        <manufacturerURL>http://kodi.tv/</manufacturerURL>
+        <modelDescription>Kodi - Media Renderer</modelDescription>
+        <modelName>Kodi</modelName>
+        <modelNumber>18.9 (18.9.0) Git:leia_pi4_18.9-Leia</modelNumber>
+        <modelURL>http://kodi.tv/</modelURL>
+        <UDN>uuid:c20294a9-0cda-311e-d084-9d3ab09d27be</UDN>
+        <presentationURL>http://192.168.1.1:8080/</presentationURL>
+        <dlna:X_DLNADOC xmlns:dlna="urn:schemas-dlna-org:device-1-0">DMR-1.50</dlna:X_DLNADOC>
+        <iconList>
+            <icon>
+                <mimetype>image/png</mimetype>
+                <width>256</width>
+                <height>256</height>
+                <depth>8</depth>
+                <url>/icon256x256.png</url>
+            </icon>
+            <icon>
+                <mimetype>image/png</mimetype>
+                <width>120</width>
+                <height>120</height>
+                <depth>8</depth>
+                <url>/icon120x120.png</url>
+            </icon>
+            <icon>
+                <mimetype>image/png</mimetype>
+                <width>48</width>
+                <height>48</height>
+                <depth>8</depth>
+                <url>/icon48x48.png</url>
+            </icon>
+            <icon>
+                <mimetype>image/png</mimetype>
+                <width>32</width>
+                <height>32</height>
+                <depth>8</depth>
+                <url>/icon32x32.png</url>
+            </icon>
+            <icon>
+                <mimetype>image/png</mimetype>
+                <width>16</width>
+                <height>16</height>
+                <depth>8</depth>
+                <url>/icon16x16.png</url>
+            </icon>
+        </iconList>
+        <serviceList>
+            <service>
+                <serviceType>urn:schemas-upnp-org:service:AVTransport:1</serviceType>
+                <serviceId>urn:upnp-org:serviceId:AVTransport</serviceId>
+                <SCPDURL>/AVTransport/c20294a9-0cda-311e-d084-9d3ab09d27be/scpd.xml</SCPDURL>
+                <controlURL>/AVTransport/c20294a9-0cda-311e-d084-9d3ab09d27be/control.xml</controlURL>
+                <eventSubURL>/AVTransport/c20294a9-0cda-311e-d084-9d3ab09d27be/event.xml</eventSubURL>
+            </service>
+            <service>
+                <serviceType>urn:schemas-upnp-org:service:ConnectionManager:1</serviceType>
+                <serviceId>urn:upnp-org:serviceId:ConnectionManager</serviceId>
+                <SCPDURL>/ConnectionManager/c20294a9-0cda-311e-d084-9d3ab09d27be/scpd.xml</SCPDURL>
+                <controlURL>/ConnectionManager/c20294a9-0cda-311e-d084-9d3ab09d27be/control.xml</controlURL>
+                <eventSubURL>/ConnectionManager/c20294a9-0cda-311e-d084-9d3ab09d27be/event.xml</eventSubURL>
+            </service>
+            <service>
+                <serviceType>urn:schemas-upnp-org:service:RenderingControl:1</serviceType>
+                <serviceId>urn:upnp-org:serviceId:RenderingControl</serviceId>
+                <SCPDURL>/RenderingControl/c20294a9-0cda-311e-d084-9d3ab09d27be/scpd.xml</SCPDURL>
+                <controlURL>/RenderingControl/c20294a9-0cda-311e-d084-9d3ab09d27be/control.xml</controlURL>
+                <eventSubURL>/RenderingControl/c20294a9-0cda-311e-d084-9d3ab09d27be/event.xml</eventSubURL>
+            </service>
+        </serviceList>
+    </device>
+</root>

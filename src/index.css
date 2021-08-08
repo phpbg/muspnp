@@ -1,0 +1,129 @@
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    margin: auto;
+    max-width: 38rem;
+    padding: 2rem;
+}
+
+body * {
+    padding: 0;
+    margin: 0;
+}
+
+button {
+    background-color: Transparent;
+    background-repeat: no-repeat;
+    border: none;
+    cursor: pointer;
+    overflow: hidden;
+    outline: none;
+}
+
+button:hover:enabled {
+    background-color: black;
+    color: white;
+}
+
+/** Workaround Standardized variant emoji (emoji without colors)
+ * https://stackoverflow.com/questions/22885702/html-for-the-pause-symbol-in-audio-and-video-control
+ */
+.standardized-emoji {
+    font-family: "Segoe UI Symbol", sans-serif
+}
+.standardized-emoji:after {
+    content: "\FE0E"
+}
+
+.icon {
+    font-size: 28px;
+}
+
+.icon-size {
+    height: 35px;
+    width: 35px;
+}
+
+#error {
+    background-color: darkred;
+    color: white;
+}
+
+#devices select {
+    margin-right: 2px;
+}
+
+#title, #devices, #libraryObjects li {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+}
+
+#bars {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: flex-start;
+}
+
+#bars > div:first-child {
+    flex-basis: 100%;
+    margin-right: 2px;
+}
+
+#libraryObjects li {
+    list-style-type: none;
+    cursor: pointer;
+    user-select: none;
+    padding: 2px;
+}
+
+#libraryObjects li:hover {
+    background-color: #ccc;
+}
+
+#libraryObjects .playing {
+    font-weight: bold;
+    color: green;
+}
+
+#progress {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: stretch;
+}
+
+#progress progress {
+    width: 100%;
+    cursor: pointer;
+}
+
+#progress > div {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+}
+
+#volume {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+}
+
+#volume progress {
+    width: 100px;
+}
+
+[v-cloak] {
+    display: none;
+}
+
+.font-italic {
+    font-style: italic;
+}
+
+.font-xsmall {
+    font-size: x-small;
+}

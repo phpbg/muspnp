@@ -1,0 +1,86 @@
+{
+  "name": "muspnp",
+  "productName": "muspnp",
+  "version": "1.0.0-rc1",
+  "description": "Play your music on your devices at home.",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron-forge start",
+    "package": "electron-forge package",
+    "make": "electron-forge make",
+    "publish": "electron-forge publish",
+    "lint": "eslint api/ && eslint src/"
+  },
+  "keywords": [],
+  "author": "Samuel CHEMLA",
+  "license": "MIT",
+  "config": {
+    "forge": {
+      "packagerConfig": {},
+      "makers": [
+        {
+          "name": "@electron-forge/maker-squirrel",
+          "config": {
+            "name": "muspnp"
+          }
+        },
+        {
+          "name": "@electron-forge/maker-zip",
+          "platforms": [
+            "darwin"
+          ]
+        },
+        {
+          "name": "@electron-forge/maker-deb",
+          "config": {
+            "options": {
+              "description": "Play your music on your devices at home.",
+              "maintainer": "Samuel CHEMLA",
+              "homepage": "https://github.com/phpbg",
+              "version": "1.0.0-rc1",
+              "categories": [
+                "Audio",
+                "Video",
+                "AudioVideo"
+              ]
+            }
+          }
+        },
+        {
+          "name": "@electron-forge/maker-rpm",
+          "config": {
+            "options": {
+              "description": "Play your music on your devices at home.",
+              "homepage": "https://github.com/phpbg",
+              "version": "1.0.0-rc1",
+              "categories": [
+                "Audio",
+                "Video",
+                "AudioVideo"
+              ]
+            }
+          }
+        }
+      ]
+    }
+  },
+  "dependencies": {
+    "axios": "^0.21.1",
+    "dayjs": "^1.10.6",
+    "electron-squirrel-startup": "^1.0.0",
+    "fast-xml-parser": "^3.19.0",
+    "node-ssdp": "^4.0.1",
+    "soap": "^0.40.0",
+    "vue": "^2.6.14"
+  },
+  "devDependencies": {
+    "@electron-forge/cli": "^6.0.0-beta.59",
+    "@electron-forge/maker-deb": "^6.0.0-beta.59",
+    "@electron-forge/maker-rpm": "^6.0.0-beta.59",
+    "@electron-forge/maker-squirrel": "^6.0.0-beta.59",
+    "@electron-forge/maker-zip": "^6.0.0-beta.59",
+    "electron": "^13.1.8",
+    "eslint": "^7.32.0",
+    "mocha": "^9.0.3"
+  }
+}
