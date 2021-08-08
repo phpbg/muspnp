@@ -1,6 +1,6 @@
 const {app, shell} = require('electron');
 const isMac = process.platform === 'darwin';
-const helpUrl = 'https://electronjs.org';// TODO set correct url
+const helpUrl = 'https://github.com/phpbg/muspnp#readme';
 
 module.exports = [
     // { role: 'appMenu' }
