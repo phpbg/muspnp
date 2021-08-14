@@ -8,6 +8,35 @@ let api = window.muspnpapi;
 dayjs.extend(dayjs_plugin_duration);
 
 /**
+ * Create an object that can be used as a cache and that remain observable
+ * @param {number} sizeHint Limit to prevent unlimited growth
+ * @returns {{}}
+ */
+function createObservableCache(sizeHint = 20) {
+    const cache = {};
+    const fifo = [];
+    const handler = {
+        get: function(obj, prop) {
+            return obj[prop];
+        },
+        set: function(obj, prop, value) {
+            obj[prop] = value;
+            // Always keep track of effective cache use & remove old entries
+            // This is suboptimal because we will fill the fifo with duplicates, but it should work well enough in most cases
+            fifo.push(String(prop));
+            if (fifo.length > sizeHint) {
+                const removeId = fifo.shift();
+                if (!fifo.includes(removeId)) {
+                    delete obj[removeId];
+                }
+            }
+            return true;
+        }
+    };
+    return new Proxy(cache, handler);
+}
+
+/**
  * Convert a duration string to an dayjs duration object.
  *
  * @param {string} strDuration e.g. "0:00:55" or "00:00:55"
@@ -27,7 +56,7 @@ window.app = createApp({
             showSpinner: true,
             error: null,
             refreshErrors: 0,
-            libraryObjectsCache: null,
+            libraryObjectsCache: createObservableCache(),
             selectedItem: [],
             playlist: null,
             currentPlayingItem: null,
@@ -41,13 +70,15 @@ window.app = createApp({
             currentVolume: null,
             searchCapabilities: null,
             search: null,
-            searchResults: null,
+            searchCache: createObservableCache()
         }
     },
     watch: {
         currentMediaServer: function (device) {
             this.showSpinner = true;
-            this.libraryObjectsCache = null;
+            this.libraryObjectsCache = createObservableCache();
+            this.search = null;
+            this.searchCache = createObservableCache()
             this.selectedItem = [];
             this.searchCapabilities = null;
             api.selectServer({usn: device.usn})
@@ -89,11 +120,14 @@ window.app = createApp({
                 return;
             }
             const searchStr = this.searchCapabilities.map(sc => `${sc} contains "${search}"`).join(' or ')
-            this.searchResults = null;
             return api
                 .search({id: 0, start: 0, count: 0, search: searchStr})
-                .then(result => this.searchResults = result)
-        }
+                .then(result => {
+                    if (result.UpdateID == null || this.searchCache?.[search]?.UpdateID !== result.UpdateID) {
+                        this.searchCache[search] = result;
+                    }
+                })
+        },
     },
     created: function () {
         const app = this;
@@ -172,13 +206,13 @@ window.app = createApp({
             return this._currentPosition_currentPosition.format('HH:mm:ss')
         },
         libraryObjects: function () {
-            if (this.search && this.searchResults) {
-                return this.searchResults.Result;
+            if (this.search) {
+                return this.searchCache[this.search]?.Result;
             }
             if (this.currentContainer == null) {
-                return this.libraryObjectsCache?.data?.[0]?.Result;
+                return this.libraryObjectsCache?.[0]?.Result;
             }
-            return this.libraryObjectsCache?.data?.[this.currentContainer['@_id']]?.Result
+            return this.libraryObjectsCache?.[this.currentContainer['@_id']]?.Result
         }
     },
     methods: {
@@ -186,25 +220,10 @@ window.app = createApp({
             this.showSpinner = true;
             return api.browse({id, start, count})
                 .then(res => {
-                    if (!this.libraryObjectsCache?.data) {
-                        this.libraryObjectsCache = {
-                            data: {},
-                            fifo: [],
-                        }
-                    }
                     // Update cache if cache miss or UpdateID changed
-                    if (res.UpdateID == null || this.libraryObjectsCache.data?.[id]?.UpdateID !== res.UpdateID) {
+                    if (res.UpdateID == null || this.libraryObjectsCache?.[id]?.UpdateID !== res.UpdateID) {
                         // Also freeze res because we don't need reactivity on this potentially big structure
-                        this.libraryObjectsCache.data[id] = Object.freeze(res);
-                    }
-                    // Always keep track of effective cache use & remove old entries
-                    // This is suboptimal because we will fill the fifo with duplicates, but it should work well enough in most cases
-                    this.libraryObjectsCache.fifo.push(String(id));
-                    if (this.libraryObjectsCache.fifo.length > 20) {
-                        const removeId = this.libraryObjectsCache.fifo.shift();
-                        if (!this.libraryObjectsCache.fifo.includes(removeId)) {
-                            delete this.libraryObjectsCache.data[removeId]
-                        }
+                        this.libraryObjectsCache[id] = Object.freeze(res);
                     }
                 })
                 .catch(err => this.error = err)
