@@ -1,7 +1,7 @@
 {
   "name": "muspnp",
   "productName": "muspnp",
-  "version": "1.0.0-rc1",
+  "version": "1.0.0-rc2",
   "description": "Play your music on your devices at home.",
   "main": "main.js",
   "scripts": {

@@ -34,7 +34,6 @@ This is a list of servers and renderer known to work. Please send a MR to improv
 Those features are not yet available:
 * Gapless playing
 * Keyboard navigation
-* Searching
 * SSDP Events handling
 * Continuous SSDP discovery (discovery only happens at start right now)
 
