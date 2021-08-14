@@ -3,6 +3,7 @@
 
 // Alternatively, omit the .prod from the path for Vue debugging purposes.
 import {createApp} from '../node_modules/vue/dist/vue.esm-browser.prod.js';
+import debounce from '../node_modules/lodash-es/debounce.js'
 
 let api = window.muspnpapi;
 dayjs.extend(dayjs_plugin_duration);
@@ -69,7 +70,7 @@ window.app = createApp({
             transportInfo: null,
             currentVolume: null,
             searchCapabilities: null,
-            search: null,
+            searchTerm: null,
             searchCache: createObservableCache()
         }
     },
@@ -77,7 +78,7 @@ window.app = createApp({
         currentMediaServer: function (device) {
             this.showSpinner = true;
             this.libraryObjectsCache = createObservableCache();
-            this.search = null;
+            this.searchTerm = null;
             this.searchCache = createObservableCache()
             this.selectedItem = [];
             this.searchCapabilities = null;
@@ -115,18 +116,8 @@ window.app = createApp({
                 }
             }
         },
-        search: function (search) {
-            if (! search) {
-                return;
-            }
-            const searchStr = this.searchCapabilities.map(sc => `${sc} contains "${search}"`).join(' or ')
-            return api
-                .search({id: 0, start: 0, count: 0, search: searchStr})
-                .then(result => {
-                    if (result.UpdateID == null || this.searchCache?.[search]?.UpdateID !== result.UpdateID) {
-                        this.searchCache[search] = result;
-                    }
-                })
+        searchTerm: function (search) {
+            this.search(search);
         },
     },
     created: function () {
@@ -135,7 +126,9 @@ window.app = createApp({
             get(target, propKey) {
                 // Proxy API for automatic error cleanup
                 // NB: api is a frozen object so we're a bit restricted here...
-                app.error = null;
+                if (! ['getPositionInfo', 'getTransportInfo'].includes(propKey)) {
+                    app.error = null;
+                }
                 return target[propKey];
             }
         };
@@ -152,6 +145,8 @@ window.app = createApp({
         api
             .ssdpSearch()
             .catch(err => this.error = err);
+
+        this.search = debounce(this._search, 500);
     },
     computed: {
         currentContainer: function () {
@@ -206,8 +201,8 @@ window.app = createApp({
             return this._currentPosition_currentPosition.format('HH:mm:ss')
         },
         libraryObjects: function () {
-            if (this.search) {
-                return this.searchCache[this.search]?.Result;
+            if (this.searchTerm) {
+                return this.searchCache[this.searchTerm]?.Result;
             }
             if (this.currentContainer == null) {
                 return this.libraryObjectsCache?.[0]?.Result;
@@ -235,7 +230,7 @@ window.app = createApp({
         },
         selectItem: function (item) {
             if (item['upnp:class'].startsWith('object.container')) {
-                this.search = null;
+                this.searchTerm = null;
                 this.selectedItem.push(item);
                 this.browse({id: item['@_id'], start: 0, count: 0});
                 return;
@@ -306,6 +301,21 @@ window.app = createApp({
                 .stop()
                 .then(() => this.startRefresh(5000))
                 .catch(err => this.error = err);
+        },
+        _search: function (search) {
+            if (! search) {
+                return;
+            }
+            this.showSpinner = true;
+            const searchStr = this.searchCapabilities.map(sc => `${sc} contains "${search}"`).join(' or ')
+            return api
+                .search({id: 0, start: 0, count: 0, search: searchStr})
+                .then(result => {
+                    if (result.UpdateID == null || this.searchCache?.[search]?.UpdateID !== result.UpdateID) {
+                        this.searchCache[search] = result;
+                    }
+                    this.showSpinner = false;
+                })
         },
         seek: function (e) {
             if (this._currentPosition_duration == null || this._currentPosition_currentPosition == null) {
