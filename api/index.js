@@ -136,6 +136,13 @@ const browse = function ({id, start, count}) {
     return currentMediaServer.browse({id, start, count});
 }
 
+const getSearchCapabilities = function () {
+    if (currentMediaServer == null) {
+        return Promise.reject(new Error('No media server selected'));
+    }
+    return currentMediaServer.getSearchCapabilities();
+}
+
 /**
  *
  * @param id
@@ -210,6 +217,13 @@ const seek = function ({at}) {
     return currentMediaRenderer.seek({instanceID: 0, unit: 'REL_TIME', target: at})
 }
 
+const search = function ({id, start, count, search}) {
+    if (currentMediaServer == null) {
+        return Promise.reject(new Error('No media server selected'));
+    }
+    return currentMediaServer.search({id, start, count, search})
+}
+
 const getVolumeDBRange = function () {
     if (currentMediaRenderer == null) {
         return Promise.reject(new Error('No renderer selected'));
@@ -247,6 +261,7 @@ module.exports = {
     resume,
     pause,
     stop,
+    search,
     seek,
     ssdpStart,
     ssdpSearch,
@@ -257,6 +272,7 @@ module.exports = {
     selectServer,
     eventEmitter,
     getPositionInfo,
+    getSearchCapabilities,
     getTransportInfo,
     getVolumeDBRange,
     getVolumeDB,

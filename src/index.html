@@ -56,6 +56,7 @@
         <span v-if="currentContainer">{{ currentContainer['dc:title'] }}</span>
         <span v-if="!currentContainer">{{ currentMediaServer.name }}</span>
     </h2>
+    <input id="search" v-if="currentMediaServer && searchCapabilities" v-model="search" placeholder="search">
     <ol id="libraryObjects" v-if="libraryObjects">
         <li v-for="item in libraryObjects" @click="selectItem(item)"
             :class="{ playing: item['@_id'] === currentPlayingItem?.['@_id'] }">

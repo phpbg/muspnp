@@ -116,6 +116,10 @@ button:hover:enabled {
     width: 100px;
 }
 
+#search {
+    width: 100%;
+}
+
 [v-cloak] {
     display: none;
 }

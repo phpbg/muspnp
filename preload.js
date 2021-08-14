@@ -23,11 +23,17 @@ contextBridge.exposeInMainWorld('muspnpapi', {
     stop: () => {
         return ipcRenderer.invoke('stop')
     },
+    search: (args) => {
+        return ipcRenderer.invoke('search', args)
+    },
     seek: (args) => {
         return ipcRenderer.invoke('seek', args)
     },
     getRenderers: () => {
         return ipcRenderer.invoke('getRenderers')
+    },
+    getSearchCapabilities: () => {
+        return ipcRenderer.invoke('getSearchCapabilities')
     },
     getServers: () => {
         return ipcRenderer.invoke('getServers')

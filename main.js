@@ -68,11 +68,17 @@ const createWindow = () => {
             stopPowerSaver();
         })
     });
+    ipcMain.handle('search', async (event, args) => {
+        return getUpnpApi().search(args);
+    });
     ipcMain.handle('seek', async (event, args) => {
         return getUpnpApi().seek(args);
     });
     ipcMain.handle('getRenderers', async () => {
         return getUpnpApi().getRenderers();
+    });
+    ipcMain.handle('getSearchCapabilities', async () => {
+        return getUpnpApi().getSearchCapabilities();
     });
     ipcMain.handle('getServers', async () => {
         return getUpnpApi().getServers();

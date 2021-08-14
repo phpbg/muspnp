@@ -40,6 +40,9 @@ window.app = new Vue({
         refreshTimer: null,
         transportInfo: null,
         currentVolume: null,
+        searchCapabilities: null,
+        search: null,
+        searchResults: null,
     },
     watch: {
         currentMediaServer: function (device) {
@@ -48,6 +51,10 @@ window.app = new Vue({
             this.showSpinner = true;
             api.selectServer({usn: device.usn})
                 .then(() => this.browse({id: 0, start: 0, count: 0}))
+                .then(() => api.getSearchCapabilities())
+                .then((searchCapabilities) => {
+                    this.searchCapabilities = searchCapabilities.split(',').filter((prop) => ['dc:title','upnp:album','upnp:artist'].includes(prop))
+                })
                 .then(() => this.showSpinner = false)
                 .catch(err => this.error = err);
         },
@@ -65,7 +72,7 @@ window.app = new Vue({
         },
         isStopped: function (stopped) {
             // Autoplay if we have more objects within same parent, and not of image type
-            if (stopped && this.currentPlayingItem != null && this.playlist != null && ! (this.currentPlayingItem['upnp:class'] || '').startsWith('object.item.imageItem')) {
+            if (stopped && this.currentPlayingItem != null && this.playlist != null && !(this.currentPlayingItem['upnp:class'] || '').startsWith('object.item.imageItem')) {
                 const currIdx = this.playlist.indexOf(this.currentPlayingItem);
                 if (currIdx + 1 < this.playlist.length) {
                     this._play(this.playlist[currIdx + 1]);
@@ -73,6 +80,13 @@ window.app = new Vue({
                     this.currentPlayingItem = null;
                 }
             }
+        },
+        search: function (search) {
+            const searchStr = this.searchCapabilities.map(sc => `${sc} contains "${search}"`).join(' or ')
+            this.searchResults = null;
+            return api
+                .search({id: 0, start: 0, count: 0, search: searchStr})
+                .then(result => this.searchResults = result)
         }
     },
     created: function () {
@@ -148,7 +162,10 @@ window.app = new Vue({
             }
             return this._currentPosition_currentPosition.format('HH:mm:ss')
         },
-        libraryObjects: function() {
+        libraryObjects: function () {
+            if (this.search && this.searchResults) {
+                return this.searchResults.Result;
+            }
             if (this.currentContainer == null) {
                 return this.libraryObjectsCache?.data?.[0]?.Result;
             }
@@ -156,11 +173,11 @@ window.app = new Vue({
         }
     },
     methods: {
-        browse: function({id, start, count}) {
+        browse: function ({id, start, count}) {
             this.showSpinner = true;
             return api.browse({id, start, count})
                 .then(res => {
-                    if (! this.libraryObjectsCache?.data) {
+                    if (!this.libraryObjectsCache?.data) {
                         this.libraryObjectsCache = {
                             data: {},
                             fifo: [],
@@ -176,7 +193,7 @@ window.app = new Vue({
                     this.libraryObjectsCache.fifo.push(String(id));
                     if (this.libraryObjectsCache.fifo.length > 20) {
                         const removeId = this.libraryObjectsCache.fifo.shift();
-                        if (! this.libraryObjectsCache.fifo.includes(removeId)) {
+                        if (!this.libraryObjectsCache.fifo.includes(removeId)) {
                             this.$delete(this.libraryObjectsCache.data, removeId);
                         }
                     }
@@ -190,6 +207,7 @@ window.app = new Vue({
         },
         selectItem: function (item) {
             if (item['upnp:class'].startsWith('object.container')) {
+                this.search = null;
                 this.selectedItem.push(item);
                 this.browse({id: item['@_id'], start: 0, count: 0});
                 return;

@@ -12,6 +12,7 @@ class MediaServer extends Device {
             return Promise.resolve(this._client);
         }
         return soap.createClientAsync(this.getWsdl(), {
+            escapeXML: true,
             endpoint: this.getContentDirectoryControlUrl()
         }).then((client) => {
             client.on('request', (xml) => logger('Soap request:%s', xml));
@@ -84,7 +85,39 @@ class MediaServer extends Device {
             });
     }
 
-    //TODO : GetSearchCapabilitiesAsync
+    /**
+     * @returns {Promise<string | null>}
+     */
+    getSearchCapabilities() {
+        return this.getSoapClient()
+            .then((client) => client.GetSearchCapabilitiesAsync())
+            .then((response) => {
+                const data = response[0];
+                return data?.SearchCaps ? data.SearchCaps : null;
+            });
+    }
+
+    search({id, start, count, search}) {
+        return this
+            .getSoapClient()
+            .then((client) => client.SearchAsync({
+                    ContainerID: id,
+                    SearchCriteria: search,
+                    Filter: '*',
+                    StartingIndex: start,
+                    RequestedCount: count,
+                    SortCriteria: ''
+                })
+            )
+            .then((response) => {
+                const data = response[0];
+                const result = xmlParser.parse(data.Result, {ignoreAttributes: false});
+                const container = toArray(result["DIDL-Lite"].container);
+                container.push(...(toArray(result["DIDL-Lite"].item)));
+                data.Result = container;
+                return data;
+            });
+    }
 }
 
 module.exports = MediaServer;
