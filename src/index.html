@@ -60,8 +60,8 @@
     <ol id="libraryObjects" v-if="libraryObjects">
         <li v-for="item in libraryObjects" @click="selectItem(item)"
             :class="{ playing: item['@_id'] === currentPlayingItem?.['@_id'] }">
-            <div class="icon .standardized-emoji" v-if="!item['upnp:albumArtURI']">{{ item | toIcon }}</div>
-            <img class="icon icon-size" v-if="item['upnp:albumArtURI']" :src="item['upnp:albumArtURI']['#text']" :alt="$options.filters.toIcon(item)"/>
+            <div class="icon .standardized-emoji" v-if="!item['upnp:albumArtURI']">{{ toIcon(item) }}</div>
+            <img class="icon icon-size" v-if="item['upnp:albumArtURI']" :src="item['upnp:albumArtURI']['#text']" :alt="toIcon(item)"/>
             <div>
                 <div>{{ item['dc:title'] }}</div>
                 <div class="font-italic font-xsmall" v-if="item['upnp:artist'] || item['upnp:album']">

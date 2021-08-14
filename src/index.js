@@ -1,9 +1,8 @@
 // Since we declared the script as type=module in the HTML file,
-// we can use ES Modules (adapted from the Vue 2 Introduction
-// https://vuejs.org/v2/guide/#Declarative-Rendering
+// we can use ES Modules
 
-// Alternatively, omit the .min from the path for Vue debugging purposes.
-import Vue from '../node_modules/vue/dist/vue.esm.browser.min.js';
+// Alternatively, omit the .prod from the path for Vue debugging purposes.
+import {createApp} from '../node_modules/vue/dist/vue.esm-browser.prod.js';
 
 let api = window.muspnpapi;
 dayjs.extend(dayjs_plugin_duration);
@@ -22,38 +21,42 @@ function toDuration(strDuration) {
     });
 }
 
-window.app = new Vue({
-    el: '#app',
-    data: {
-        showSpinner: true,
-        error: null,
-        refreshErrors: 0,
-        libraryObjectsCache: null,
-        selectedItem: [],
-        playlist: null,
-        currentPlayingItem: null,
-        currentPositionInfo: null,
-        currentMediaServer: '',
-        currentMediaRenderer: '',
-        availableMediaServers: null,
-        availableMediaRenderers: null,
-        refreshTimer: null,
-        transportInfo: null,
-        currentVolume: null,
-        searchCapabilities: null,
-        search: null,
-        searchResults: null,
+window.app = createApp({
+    data: function() {
+        return {
+            showSpinner: true,
+            error: null,
+            refreshErrors: 0,
+            libraryObjectsCache: null,
+            selectedItem: [],
+            playlist: null,
+            currentPlayingItem: null,
+            currentPositionInfo: null,
+            currentMediaServer: '',
+            currentMediaRenderer: '',
+            availableMediaServers: null,
+            availableMediaRenderers: null,
+            refreshTimer: null,
+            transportInfo: null,
+            currentVolume: null,
+            searchCapabilities: null,
+            search: null,
+            searchResults: null,
+        }
     },
     watch: {
         currentMediaServer: function (device) {
+            this.showSpinner = true;
             this.libraryObjectsCache = null;
             this.selectedItem = [];
-            this.showSpinner = true;
+            this.searchCapabilities = null;
             api.selectServer({usn: device.usn})
                 .then(() => this.browse({id: 0, start: 0, count: 0}))
-                .then(() => api.getSearchCapabilities())
+                .then(() => api.getSearchCapabilities().catch(() => null))
                 .then((searchCapabilities) => {
-                    this.searchCapabilities = searchCapabilities.split(',').filter((prop) => ['dc:title','upnp:album','upnp:artist'].includes(prop))
+                    if (searchCapabilities) {
+                        this.searchCapabilities = searchCapabilities.split(',').filter((prop) => ['dc:title','upnp:album','upnp:artist'].includes(prop))
+                    }
                 })
                 .then(() => this.showSpinner = false)
                 .catch(err => this.error = err);
@@ -82,6 +85,9 @@ window.app = new Vue({
             }
         },
         search: function (search) {
+            if (! search) {
+                return;
+            }
             const searchStr = this.searchCapabilities.map(sc => `${sc} contains "${search}"`).join(' or ')
             this.searchResults = null;
             return api
@@ -148,6 +154,9 @@ window.app = new Vue({
             if (this._currentPosition_currentPosition == null || this._currentPosition_duration == null) {
                 return 0;
             }
+            if (this._currentPosition_duration.asSeconds() === 0) {
+                return 0;
+            }
             return Math.round(100 * this._currentPosition_currentPosition.asSeconds() / this._currentPosition_duration.asSeconds());
         },
         currentPositionRemaining: function () {
@@ -186,7 +195,7 @@ window.app = new Vue({
                     // Update cache if cache miss or UpdateID changed
                     if (res.UpdateID == null || this.libraryObjectsCache.data?.[id]?.UpdateID !== res.UpdateID) {
                         // Also freeze res because we don't need reactivity on this potentially big structure
-                        this.$set(this.libraryObjectsCache.data, id, Object.freeze(res));
+                        this.libraryObjectsCache.data[id] = Object.freeze(res);
                     }
                     // Always keep track of effective cache use & remove old entries
                     // This is suboptimal because we will fill the fifo with duplicates, but it should work well enough in most cases
@@ -194,7 +203,7 @@ window.app = new Vue({
                     if (this.libraryObjectsCache.fifo.length > 20) {
                         const removeId = this.libraryObjectsCache.fifo.shift();
                         if (!this.libraryObjectsCache.fifo.includes(removeId)) {
-                            this.$delete(this.libraryObjectsCache.data, removeId);
+                            delete this.libraryObjectsCache.data[removeId]
                         }
                     }
                 })
@@ -299,9 +308,7 @@ window.app = new Vue({
             const volumePercent = Math.round(x * e.target.max / e.target.offsetWidth);
             this.currentVolume = volumePercent;
             api.setVolume({desiredVolume: volumePercent});
-        }
-    },
-    filters: {
+        },
         toIcon: function (item) {
             if (item['upnp:class'].startsWith('object.container')) {
                 return '📁';
@@ -318,5 +325,5 @@ window.app = new Vue({
             return '[]';
         }
     }
-})
+}).mount('#app')
 
