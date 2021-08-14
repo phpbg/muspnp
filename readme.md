@@ -48,7 +48,7 @@ git clone https://github.com/phpbg/muspnp.git
 cd muspnp
 npm ci --no-optional
 npm run start
-rpm run make
+npm run make
 ```
 
 ## Credits
