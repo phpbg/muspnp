@@ -30,6 +30,7 @@ This is a list of servers and renderer known to work. Please send a MR to improv
 * [ReadyMedia](https://sourceforge.net/projects/minidlna/)
 * [BubbleUPnP (serving from android)](https://play.google.com/store/apps/details?id=com.bubblesoft.android.bubbleupnp)
 * [PlainUPnP](https://github.com/m3sv/PlainUPnP)
+* [Rygel](https://wiki.gnome.org/Projects/Rygel)
 
 ## Missing features
 Those features are not yet available:

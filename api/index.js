@@ -172,9 +172,27 @@ const play = function ({id, uri}) {
                 })
         })
         .then((metadata) => {
+            let res = metadata?.object?.res;
+            if (Array.isArray(res) && res.length > 0) {
+                /**
+                 * Multiple values are allowed for resource description
+                 * Arbitrary take the first one
+                 * TODO see if there is a better choice here
+                 * Example :
+                 * [
+                 *   {"#text":"http://192.168.1.1:38719/foo.mp3","@_size":"5289384","@_duration":"0:02:12.000","@_bitrate":"40000","@_nrAudioChannels":"2","@_sampleFrequency":"44100","@_protocolInfo":"http-get:*:audio/mpeg:DLNA.ORG_PN=MP3;DLNA.ORG_OP=01;DLNA.ORG_FLAGS=01700000000000000000000000000000"},
+                 *   {"#text":"http://192.168.1.1:38719/foo.lpcm","@_duration":"0:02:12.000","@_bitrate":"176400","@_bitsPerSample":"16","@_nrAudioChannels":"2","@_sampleFrequency":"44100","@_protocolInfo":"http-get:*:audio/L16;rate=44100;channels=2:DLNA.ORG_PN=LPCM;DLNA.ORG_OP=10;DLNA.ORG_CI=1;DLNA.ORG_FLAGS=01700000000000000000000000000000"},
+                 *   {"#text":"http://192.168.1.1:38719/foo.adts","@_duration":"0:02:12.000","@_sampleFrequency":"256","@_protocolInfo":"http-get:*:audio/vnd.dlna.adts:DLNA.ORG_PN=AAC_ADTS_320;DLNA.ORG_OP=10;DLNA.ORG_CI=1;DLNA.ORG_FLAGS=01700000000000000000000000000000"}
+                 * ]
+                 */
+                res = res[0];
+            }
+            if (res == null || res['#text'] == null) {
+                throw new Error("Unable to understand resource");
+            }
             return currentMediaRenderer.setAVTransportURI({
                 instanceID: 0,
-                currentURI: metadata.object.res['#text'],
+                currentURI: res['#text'],
                 currentUriMetadata: escapeXml(metadata.xml)
             })
         })
