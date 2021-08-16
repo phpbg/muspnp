@@ -40,14 +40,19 @@ function createObservableCache(sizeHint = 20) {
 /**
  * Convert a duration string to an dayjs duration object.
  *
- * @param {string} strDuration e.g. "0:00:55" or "00:00:55"
+ * @param {string} strDuration e.g. "0:00:55" or "00:00:55", or even "0:00:00.000" (Rygel)
  * @returns {*}
  */
+const toDurationRegex = /([0-9]+):([0-9]+):([0-9]+)/;
 function toDuration(strDuration) {
+    const res = toDurationRegex.exec(strDuration);
+    if (! res || res.length < 4) {
+        return null;
+    }
     return dayjs.duration({
-        hours: parseInt(strDuration.substr(0, strDuration.indexOf(':'))),
-        minutes: parseInt(strDuration.slice(-5, -3)),
-        seconds: parseInt(strDuration.slice(-2)),
+        hours: parseInt(res[1]),
+        minutes: parseInt(res[2]),
+        seconds: parseInt(res[3]),
     });
 }
 

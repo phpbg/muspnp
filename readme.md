@@ -24,6 +24,7 @@ This is a list of servers and renderer known to work. Please send a MR to improv
 * [Kodi](https://kodi.tv/)
 * [BubbleUPnP](https://play.google.com/store/apps/details?id=com.bubblesoft.android.bubbleupnp) (tested on android, volume control is imperfect)
 * [gmrender-resurrect](https://github.com/hzeller/gmrender-resurrect)
+* [Rygel](https://wiki.gnome.org/Projects/Rygel)
 
 ### Servers
 * [ReadyMedia](https://sourceforge.net/projects/minidlna/)
