@@ -15,26 +15,6 @@ const ssdpDevices = {};
 let currentMediaServer;
 let currentMediaRenderer;
 
-function escapeXml(unsafe) {
-    if (unsafe == null) {
-        return '';
-    }
-    return unsafe.replace(/[<>&'"]/g, function (c) {
-        switch (c) {
-            case '<':
-                return '&lt;';
-            case '>':
-                return '&gt;';
-            case '&':
-                return '&amp;';
-            case '\'':
-                return '&apos;';
-            case '"':
-                return '&quot;';
-        }
-    });
-}
-
 client.on('notify', function () {
     logger('Got a notification.')
 })
@@ -193,7 +173,7 @@ const play = function ({id, uri}) {
             return currentMediaRenderer.setAVTransportURI({
                 instanceID: 0,
                 currentURI: res['#text'],
-                currentUriMetadata: escapeXml(metadata.xml)
+                currentUriMetadata: metadata.xml
             })
         })
         .then(() => currentMediaRenderer.play({instanceID: 0, speed: 1}));

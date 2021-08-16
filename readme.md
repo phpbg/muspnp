@@ -21,15 +21,16 @@ Although it is primarily meant for audio files, you can also use it to browse/wa
 This is a list of servers and renderer known to work. Please send a MR to improve it.
 
 ### Renderers
-* [Kodi](https://kodi.tv/)
 * [BubbleUPnP](https://play.google.com/store/apps/details?id=com.bubblesoft.android.bubbleupnp) (tested on android, volume control is imperfect)
 * [gmrender-resurrect](https://github.com/hzeller/gmrender-resurrect)
+* [Kodi](https://kodi.tv/)
 * [Rygel](https://wiki.gnome.org/Projects/Rygel)
 
 ### Servers
-* [ReadyMedia](https://sourceforge.net/projects/minidlna/)
 * [BubbleUPnP (serving from android)](https://play.google.com/store/apps/details?id=com.bubblesoft.android.bubbleupnp)
 * [PlainUPnP](https://github.com/m3sv/PlainUPnP)
+* [Plex](https://www.plex.tv/media-server-downloads)
+* [ReadyMedia](https://sourceforge.net/projects/minidlna/)
 * [Rygel](https://wiki.gnome.org/Projects/Rygel)
 
 ## Missing features

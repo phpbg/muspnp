@@ -1,31 +1,13 @@
 'use strict';
 
-const soap = require("soap");
 const xmlParser = require("fast-xml-parser");
 const Device = require("./Device");
 const toArray = require("./toArray");
-const logger = require("./loggerFactory")();
+const axios = require('./axios');
+const soapErrHandler = require('./soapErrHandler');
+const _ = require('lodash')
 
 class MediaServer extends Device {
-    getSoapClient() {
-        if (this._client) {
-            return Promise.resolve(this._client);
-        }
-        return soap.createClientAsync(this.getWsdl(), {
-            escapeXML: true,
-            endpoint: this.getContentDirectoryControlUrl()
-        }).then((client) => {
-            client.on('request', (xml) => logger('Soap request:%s', xml));
-            client.on('response', (xml) => logger('Soap response:%s', xml));
-            this._client = client;
-            return client;
-        })
-    }
-
-    getWsdl() {
-        return __dirname + '/../schemas/mediaServer.wsdl';
-    }
-
     /**
      * @returns {string}
      */
@@ -37,24 +19,38 @@ class MediaServer extends Device {
     }
 
     browse({id, start, count}) {
-        return this
-            .getSoapClient()
-            .then((client) => client.BrowseAsync({
-                    ObjectID: id,
-                    BrowseFlag: 'BrowseDirectChildren',
-                    Filter: '*',
-                    StartingIndex: start,
-                    RequestedCount: count,
-                    SortCriteria: ''
-                })
-            )
+        const req = `<?xml version="1.0" encoding="utf-8"?>
+<s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/" s:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/">
+	<s:Body>
+		<u:Browse xmlns:u="urn:schemas-upnp-org:service:ContentDirectory:1">
+			<ObjectID>${id}</ObjectID>
+			<BrowseFlag>BrowseDirectChildren</BrowseFlag>
+			<Filter>*</Filter>
+			<StartingIndex>${start}</StartingIndex>
+			<RequestedCount>${count}</RequestedCount>
+			<SortCriteria></SortCriteria>
+		</u:Browse>
+	</s:Body>
+</s:Envelope>`;
+        return axios.request({
+            method: 'post',
+            url: this.getContentDirectoryControlUrl(),
+            headers: {
+                'CONTENT-TYPE': 'text/xml; charset="utf-8"',
+                SOAPAction: '"urn:schemas-upnp-org:service:ContentDirectory:1#Browse"'
+            },
+            data: req
+        })
+            .catch(soapErrHandler)
             .then((response) => {
-                const data = response[0];
-                const result = xmlParser.parse(data.Result, {ignoreAttributes: false});
+                const data = xmlParser.parse(response.data, {ignoreAttributes: false, ignoreNameSpace: true});
+                const browseResponse = data?.Envelope?.Body?.BrowseResponse;
+                const didlResult = _.unescape(browseResponse?.Result);
+                const result = xmlParser.parse(didlResult, {ignoreAttributes: false});
                 const container = toArray(result["DIDL-Lite"].container);
                 container.push(...(toArray(result["DIDL-Lite"].item)));
-                data.Result = container;
-                return data;
+                browseResponse.Result = container;
+                return browseResponse;
             });
     }
 
@@ -64,58 +60,101 @@ class MediaServer extends Device {
      * @returns {Promise<{xml: string, object: object}>}
      */
     getMetadata({id}) {
-        return this.getSoapClient()
-            .then((client) =>
-                client.BrowseAsync({
-                    ObjectID: id,
-                    BrowseFlag: 'BrowseMetadata',
-                    Filter: '*',
-                    StartingIndex: 0,
-                    RequestedCount: 0,
-                    SortCriteria: ''
-                })
-            )
+        const req = `<?xml version="1.0" encoding="utf-8"?>
+<s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/" s:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/">
+	<s:Body>
+		<u:Browse xmlns:u="urn:schemas-upnp-org:service:ContentDirectory:1">
+			<ObjectID>${id}</ObjectID>
+			<BrowseFlag>BrowseMetadata</BrowseFlag>
+			<Filter>*</Filter>
+			<StartingIndex>0</StartingIndex>
+			<RequestedCount>0</RequestedCount>
+			<SortCriteria></SortCriteria>
+		</u:Browse>
+	</s:Body>
+</s:Envelope>`;
+        return axios.request({
+            method: 'post',
+            url: this.getContentDirectoryControlUrl(),
+            headers: {
+                'CONTENT-TYPE': 'text/xml; charset="utf-8"',
+                SOAPAction: '"urn:schemas-upnp-org:service:ContentDirectory:1#Browse"'
+            },
+            data: req
+        })
+            .catch(soapErrHandler)
             .then((response) => {
-                const data = response[0];
-                const result = xmlParser.parse(data.Result, {ignoreAttributes: false});
+                const data = xmlParser.parse(response.data, {ignoreAttributes: false, ignoreNameSpace: true});
+                const browseResponse = data?.Envelope?.Body?.BrowseResponse;
+                const didlResult = _.unescape(browseResponse?.Result);
+                const result = xmlParser.parse(didlResult, {ignoreAttributes: false});
                 return {
                     object: result["DIDL-Lite"].container || result["DIDL-Lite"].item,
-                    xml: data.Result
+                    xml: browseResponse?.Result
                 }
             });
     }
 
     /**
-     * @returns {Promise<string | null>}
+     * @returns {Promise<string | undefined>}
      */
     getSearchCapabilities() {
-        return this.getSoapClient()
-            .then((client) => client.GetSearchCapabilitiesAsync())
+        const req = `<?xml version="1.0" encoding="utf-8"?>
+<s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/" s:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/">
+	<s:Body>
+		<u:GetSearchCapabilities xmlns:u="urn:schemas-upnp-org:service:ContentDirectory:1">
+		</u:GetSearchCapabilities>
+	</s:Body>
+</s:Envelope>`;
+        return axios.request({
+            method: 'post',
+            url: this.getContentDirectoryControlUrl(),
+            headers: {
+                'CONTENT-TYPE': 'text/xml; charset="utf-8"',
+                SOAPAction: '"urn:schemas-upnp-org:service:ContentDirectory:1#GetSearchCapabilities"'
+            },
+            data: req
+        })
+            .catch(soapErrHandler)
             .then((response) => {
-                const data = response[0];
-                return data?.SearchCaps ? data.SearchCaps : null;
+                const data = xmlParser.parse(response.data, {ignoreAttributes: false, ignoreNameSpace: true});
+                return data?.Envelope?.Body?.GetSearchCapabilitiesResponse?.SearchCaps;
             });
     }
 
     search({id, start, count, search}) {
-        return this
-            .getSoapClient()
-            .then((client) => client.SearchAsync({
-                    ContainerID: id,
-                    SearchCriteria: search,
-                    Filter: '*',
-                    StartingIndex: start,
-                    RequestedCount: count,
-                    SortCriteria: ''
-                })
-            )
+        const req = `<?xml version="1.0" encoding="utf-8"?>
+<s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/" s:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/">
+	<s:Body>
+		<u:Search xmlns:u="urn:schemas-upnp-org:service:ContentDirectory:1">
+		    <ContainerID>${id}</ContainerID>
+            <SearchCriteria>${search}</SearchCriteria>
+            <Filter>*</Filter>
+            <StartingIndex>${start}</StartingIndex>
+            <RequestedCount>${count}</RequestedCount>
+            <SortCriteria></SortCriteria>
+		</u:Search>
+	</s:Body>
+</s:Envelope>`;
+        return axios.request({
+            method: 'post',
+            url: this.getContentDirectoryControlUrl(),
+            headers: {
+                'CONTENT-TYPE': 'text/xml; charset="utf-8"',
+                SOAPAction: '"urn:schemas-upnp-org:service:ContentDirectory:1#Search"'
+            },
+            data: req
+        })
+            .catch(soapErrHandler)
             .then((response) => {
-                const data = response[0];
-                const result = xmlParser.parse(data.Result, {ignoreAttributes: false});
+                const data = xmlParser.parse(response.data, {ignoreAttributes: false, ignoreNameSpace: true});
+                const searchResponse = data?.Envelope?.Body?.SearchResponse;
+                const didlResult = _.unescape(searchResponse?.Result);
+                const result = xmlParser.parse(didlResult, {ignoreAttributes: false});
                 const container = toArray(result["DIDL-Lite"].container);
                 container.push(...(toArray(result["DIDL-Lite"].item)));
-                data.Result = container;
-                return data;
+                searchResponse.Result = container;
+                return searchResponse;
             });
     }
 }
