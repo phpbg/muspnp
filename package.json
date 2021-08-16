@@ -38,7 +38,7 @@
               "description": "Play your music on your devices at home.",
               "maintainer": "Samuel CHEMLA",
               "homepage": "https://github.com/phpbg/muspnp#readme",
-              "version": "1.0.0-rc1",
+              "version": "1.0.0-rc3",
               "categories": [
                 "Audio",
                 "Video",
@@ -53,7 +53,7 @@
             "options": {
               "description": "Play your music on your devices at home.",
               "homepage": "https://github.com/phpbg/muspnp#readme",
-              "version": "1.0.0-rc1",
+              "version": "1.0.0-rc3",
               "categories": [
                 "Audio",
                 "Video",
