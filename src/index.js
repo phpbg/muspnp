@@ -151,7 +151,7 @@ window.app = createApp({
             .ssdpSearch()
             .catch(err => this.error = err);
 
-        this.search = debounce(this._search, 500);
+        this.search = debounce(this._search, 400);
     },
     computed: {
         currentContainer: function () {
@@ -307,8 +307,9 @@ window.app = createApp({
                 .then(() => this.startRefresh(5000))
                 .catch(err => this.error = err);
         },
-        _search: function (search) {
-            if (! search) {
+        _search: function (searchTerm) {
+            const search = (searchTerm || '').trim();
+            if (search.length === 0) {
                 return;
             }
             this.showSpinner = true;
@@ -316,11 +317,30 @@ window.app = createApp({
             return api
                 .search({id: 0, start: 0, count: 0, search: searchStr})
                 .then(result => {
-                    if (result.UpdateID == null || this.searchCache?.[search]?.UpdateID !== result.UpdateID) {
-                        this.searchCache[search] = result;
+                    // If no results found, try harder to find
+                    if (parseInt(result.TotalMatches) === 0 && search.indexOf(' ') >= 0) {
+                        const searchStr = search
+                            .split(' ')
+                            .filter(term => term.length>0)
+                            .map((term) => '( ' + this.searchCapabilities.map(sc => `${sc} contains "${term}"`).join(' or ') + ' )')
+                            .join(' and ')
+                        return api
+                            .search({id: 0, start: 0, count: 0, search: searchStr})
                     }
-                    this.showSpinner = false;
+                    if (result.UpdateID == null || this.searchCache?.[searchTerm]?.UpdateID !== result.UpdateID) {
+                        this.searchCache[searchTerm] = result;
+                    }
+                    return null;
                 })
+                .then(result => {
+                    if (result === null) {
+                        return;
+                    }
+                    if (result.UpdateID == null || this.searchCache?.[searchTerm]?.UpdateID !== result.UpdateID) {
+                        this.searchCache[searchTerm] = result;
+                    }
+                })
+                .then(() => this.showSpinner = false)
         },
         seek: function (e) {
             if (this._currentPosition_duration == null || this._currentPosition_currentPosition == null) {
