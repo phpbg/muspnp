@@ -2,7 +2,7 @@
 // we can use ES Modules
 
 // Alternatively, omit the .prod from the path for Vue debugging purposes.
-import {createApp} from '../node_modules/vue/dist/vue.esm-browser.prod.js';
+import {createApp, nextTick} from '../node_modules/vue/dist/vue.esm-browser.prod.js';
 import debounce from '../node_modules/lodash-es/debounce.js'
 
 let api = window.muspnpapi;
@@ -231,10 +231,21 @@ window.app = createApp({
         },
         back: function () {
             const popped = this.selectedItem.pop();
-            this.browse({id: popped['@_parentID'], start: 0, count: 0});
+            return nextTick()
+                .then(() => {
+                    if (popped._scrollTop) {
+                        // We can scroll because we waited for nextTick and contents should have been loaded from cache
+                        window.scrollTo(0, popped._scrollTop);
+                        popped._scrollTop = null;
+                    }
+                })
+                .then(() => this.browse({id: popped['@_parentID'], start: 0, count: 0})); // refresh cache anyway
         },
         selectItem: function (item) {
             if (item['upnp:class'].startsWith('object.container')) {
+                if (! this.searchTerm) {
+                    item._scrollTop = document.documentElement.scrollTop
+                }
                 this.searchTerm = null;
                 this.selectedItem.push(item);
                 this.browse({id: item['@_id'], start: 0, count: 0});

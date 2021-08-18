@@ -59,7 +59,7 @@
     <input id="search" v-if="currentMediaServer && searchCapabilities" v-model="searchTerm" placeholder="search">
     <ol id="libraryObjects" v-if="libraryObjects">
         <li v-for="item in libraryObjects" @click="selectItem(item)"
-            :class="{ playing: item['@_id'] === currentPlayingItem?.['@_id'] }">
+            :class="{ playing: item['@_id'] === currentPlayingItem?.['@_id'] }" :ref="item['@_id']">
             <div class="icon .standardized-emoji" v-if="!item['upnp:albumArtURI']">{{ toIcon(item) }}</div>
             <img class="icon icon-size" v-if="item['upnp:albumArtURI']" :src="item['upnp:albumArtURI']['#text']" :alt="toIcon(item)"/>
             <div>
