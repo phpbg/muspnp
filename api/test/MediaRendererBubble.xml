@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<root xmlns="urn:schemas-upnp-org:device-1-0">
+    <specVersion>
+        <major>1</major>
+        <minor>0</minor>
+    </specVersion>
+    <device>
+        <deviceType>urn:schemas-upnp-org:device:MediaRenderer:1</deviceType>
+        <UDN>uuid:9f126244-b23e-4cde-8e97-6d5a5f3f5f42</UDN>
+        <friendlyName>BubbleUPnP (H3113)</friendlyName>
+        <manufacturer>Bubblesoft</manufacturer>
+        <manufacturerURL>http://forum.xda-developers.com/showthread.php?t=1118891</manufacturerURL>
+        <modelDescription>BubbleUPnP Media Renderer</modelDescription>
+        <modelName>BubbleUPnP Media Renderer</modelName>
+        <modelNumber>3.5.4</modelNumber>
+        <modelURL></modelURL>
+        <dlna:X_DLNADOC xmlns:dlna="urn:schemas-dlna-org:device-1-0">DMR-1.50</dlna:X_DLNADOC>
+        <iconList>
+            <icon>
+                <mimetype>image/png</mimetype>
+                <width>72</width>
+                <height>72</height>
+                <depth>32</depth>
+                <url>/dev/9f126244-b23e-4cde-8e97-6d5a5f3f5f42/icon.png</url>
+            </icon>
+        </iconList>
+        <serviceList>
+            <service>
+                <serviceType>urn:schemas-upnp-org:service:AVTransport:1</serviceType>
+                <serviceId>urn:upnp-org:serviceId:AVTransport</serviceId>
+                <controlURL>/dev/9f126244-b23e-4cde-8e97-6d5a5f3f5f42/svc/upnp-org/AVTransport/action</controlURL>
+                <eventSubURL>/dev/9f126244-b23e-4cde-8e97-6d5a5f3f5f42/svc/upnp-org/AVTransport/event</eventSubURL>
+                <SCPDURL>/dev/9f126244-b23e-4cde-8e97-6d5a5f3f5f42/svc/upnp-org/AVTransport/desc.xml</SCPDURL>
+            </service>
+            <service>
+                <serviceType>urn:schemas-upnp-org:service:RenderingControl:1</serviceType>
+                <serviceId>urn:upnp-org:serviceId:RenderingControl</serviceId>
+                <controlURL>/dev/9f126244-b23e-4cde-8e97-6d5a5f3f5f42/svc/upnp-org/RenderingControl/action</controlURL>
+                <eventSubURL>/dev/9f126244-b23e-4cde-8e97-6d5a5f3f5f42/svc/upnp-org/RenderingControl/event</eventSubURL>
+                <SCPDURL>/dev/9f126244-b23e-4cde-8e97-6d5a5f3f5f42/svc/upnp-org/RenderingControl/desc.xml</SCPDURL>
+            </service>
+            <service>
+                <serviceType>urn:schemas-upnp-org:service:ConnectionManager:1</serviceType>
+                <serviceId>urn:upnp-org:serviceId:ConnectionManager</serviceId>
+                <controlURL>/dev/9f126244-b23e-4cde-8e97-6d5a5f3f5f42/svc/upnp-org/ConnectionManager/action</controlURL>
+                <eventSubURL>/dev/9f126244-b23e-4cde-8e97-6d5a5f3f5f42/svc/upnp-org/ConnectionManager/event</eventSubURL>
+                <SCPDURL>/dev/9f126244-b23e-4cde-8e97-6d5a5f3f5f42/svc/upnp-org/ConnectionManager/desc.xml</SCPDURL>
+            </service>
+        </serviceList>
+    </device>
+</root>

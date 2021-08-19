@@ -21,7 +21,7 @@ Although it is primarily meant for audio files, you can also use it to browse/wa
 This is a list of servers and renderer known to work. Please send a MR to improve it.
 
 ### Renderers
-* [BubbleUPnP](https://play.google.com/store/apps/details?id=com.bubblesoft.android.bubbleupnp) (tested on android, volume control is imperfect)
+* [BubbleUPnP](https://play.google.com/store/apps/details?id=com.bubblesoft.android.bubbleupnp) (tested on android)
 * [gmrender-resurrect](https://github.com/hzeller/gmrender-resurrect)
 * [Kodi](https://kodi.tv/)
 * [Rygel](https://wiki.gnome.org/Projects/Rygel)
