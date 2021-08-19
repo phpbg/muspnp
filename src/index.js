@@ -277,10 +277,10 @@ window.app = createApp({
         },
         startRefresh: function (timeout = 1000) {
             this.refreshErrors = 0;
-            this._refresh();
             if (this.refreshTimer) {
                 clearInterval(this.refreshTimer);
             }
+            this._refresh();
             this.refreshTimer = setInterval(() => {
                 this._refresh()
                     .catch(err => {
