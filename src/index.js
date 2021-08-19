@@ -358,7 +358,7 @@ window.app = createApp({
                 return;
             }
             this.stopRefresh();
-            const x = e.pageX - e.target.offsetLeft
+            const x = e.pageX - e.target.offsetLeft - e.target.offsetParent.offsetLeft;
             const seekPercent = x * e.target.max / e.target.offsetWidth;
             const seekToSecond = Math.round(seekPercent * this._currentPosition_duration.asSeconds() / 100);
             return api
@@ -369,7 +369,7 @@ window.app = createApp({
                 .catch(err => this.error = err);
         },
         setVolume: function (e) {
-            const x = e.pageX - e.target.offsetLeft;
+            const x = e.pageX - e.target.offsetLeft - e.target.offsetParent.offsetLeft;
             const volumePercent = Math.round(x * e.target.max / e.target.offsetWidth);
             this.currentVolume = volumePercent;
             api.setVolume({desiredVolume: volumePercent});
