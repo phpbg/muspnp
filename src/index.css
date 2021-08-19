@@ -59,6 +59,12 @@ button:hover:enabled {
     align-items: center;
 }
 
+#controls {
+    position: sticky;
+    top: 0;
+    background-color: white;
+}
+
 #bars {
     display: flex;
     flex-direction: row;
