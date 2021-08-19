@@ -63,7 +63,7 @@
             <div class="icon .standardized-emoji" v-if="!item['upnp:albumArtURI']">{{ toIcon(item) }}</div>
             <img class="icon icon-size" v-if="item['upnp:albumArtURI']" :src="item['upnp:albumArtURI']['#text']" :alt="toIcon(item)"/>
             <div>
-                <div>{{ item['dc:title'] }}</div>
+                <div v-html="item['dc:title']"></div><!-- Use v-html because some metadata may contain html -->
                 <div class="font-italic font-xsmall" v-if="item['upnp:artist'] || item['upnp:album']">
                     {{ item['upnp:artist'] }} - {{ item['upnp:album'] }}
                 </div>
