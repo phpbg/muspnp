@@ -118,8 +118,13 @@ button:hover:enabled {
     flex-wrap: nowrap;
 }
 
+#volume span {
+    cursor: default;
+}
+
 #volume progress {
     width: 100px;
+    cursor: pointer;
 }
 
 #search {
