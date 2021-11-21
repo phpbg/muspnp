@@ -32,6 +32,7 @@ This is a list of servers and renderer known to work. Please send a MR to improv
 * [Plex](https://www.plex.tv/media-server-downloads)
 * [ReadyMedia](https://sourceforge.net/projects/minidlna/)
 * [Rygel](https://wiki.gnome.org/Projects/Rygel)
+* [Synology](https://www.synology.com/helpfile/help/DSM/5.2/dsm/fre/Tutorial/home_theater_media_server.html)
 
 ## Missing features
 Those features are not yet available:
