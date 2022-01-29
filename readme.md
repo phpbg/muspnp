@@ -40,7 +40,6 @@ Those features are not yet available:
 * Gapless playing
 * Keyboard navigation
 * SSDP Events handling
-* Continuous SSDP discovery (discovery only happens at start right now)
 
 ## Debug / logs
 Logs are outputed if you run the program from the command line. You can redirect them to a file.

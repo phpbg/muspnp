@@ -87,6 +87,9 @@ window.app = createApp({
             this.searchCache = createObservableCache()
             this.selectedItem = [];
             this.searchCapabilities = null;
+            if (! device) {
+                return;
+            }
             api.selectServer({usn: device.usn})
                 .then(() => this.browse({id: 0, start: 0, count: 0}))
                 .then(() => api.getSearchCapabilities().catch(() => null))
@@ -99,11 +102,24 @@ window.app = createApp({
                 .catch(err => this.error = err);
         },
         currentMediaRenderer: function (device, oldDevice) {
-            (oldDevice == null || oldDevice === '' ? Promise.resolve() : this.stop())
+            (oldDevice == null || oldDevice === '' || device == null ? Promise.resolve() : this.stop())
                 .catch(() => null)
-                .then(() => api.selectRenderer({usn: device.usn}))
-                .then(() => this.startRefresh(5000))
                 .then(() => {
+                    if (device) {
+                        return api.selectRenderer({usn: device.usn})
+                    }
+                })
+                .then(() => {
+                    if (device) {
+                        this.startRefresh(5000)
+                    } else {
+                        this.stopRefresh();
+                    }
+                })
+                .then(() => {
+                    if (! device) {
+                        return;
+                    }
                     return api.getVolume()
                         .then((currentVolume) => this.currentVolume = currentVolume)
                         .catch(() => this.currentVolume = null)
@@ -141,8 +157,20 @@ window.app = createApp({
 
         api.onDevice(() => {
             Promise.all([
-                api.getRenderers().then(renderers => this.availableMediaRenderers = renderers),
-                api.getServers().then(servers => this.availableMediaServers = servers),
+                api.getRenderers().then(renderers => {
+                    if (this.availableMediaRenderers && this.currentMediaRenderer && !renderers.find(renderer => renderer.usn === this.currentMediaRenderer.usn)) {
+                        // Current media renderer is not present anymore
+                        this.currentMediaRenderer = null;
+                    }
+                    this.availableMediaRenderers = renderers
+                }),
+                api.getServers().then(servers => {
+                    if (this.availableMediaServers && this.currentMediaServer && !servers.find(server => server.usn === this.currentMediaServer.usn)) {
+                        // Current media server is not present anymore
+                        this.currentMediaServer = null;
+                    }
+                    this.availableMediaServers = servers
+                }),
             ])
                 .then(() => this.showSpinner = false)
                 .catch(err => this.error = err);

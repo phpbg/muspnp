@@ -3,6 +3,8 @@
 const logger = require('./src/loggerFactory')();
 const Client = require('node-ssdp').Client;
 const client = new Client({reuseAddr: false, explicitSocketBind: true, customLogger: logger});
+const Server = require('node-ssdp').Server;
+const server = new Server({suppressRootDeviceAdvertisements: true});
 const axios = require('./src/axios');
 const EventEmitter = require('events');
 const eventEmitter = new EventEmitter();
@@ -11,9 +13,30 @@ const MediaServer = require('./src/MediaServer');
 const MediaRenderer = require('./src/MediaRenderer');
 
 const ssdpDevices = {};
-
 let currentMediaServer;
 let currentMediaRenderer;
+
+server.on('advertise-alive', function (headers) {
+    logger('SSDP event:\n%s', JSON.stringify(headers, null, '  '))
+    addDeviceFromSsdpHeaders(headers);
+});
+server.on('advertise-bye', function (headers) {
+    logger('SSDP event:\n%s', JSON.stringify(headers, null, '  '))
+    if (ssdpDevices[headers.USN]) {
+        if (currentMediaServer && currentMediaServer === ssdpDevices[headers.USN]) {
+            currentMediaServer = null;
+        }
+        if (currentMediaRenderer && currentMediaRenderer === ssdpDevices[headers.USN]) {
+            currentMediaRenderer = null;
+        }
+        delete ssdpDevices[headers.USN];
+        eventEmitter.emit('device')
+    }
+});
+server.start();
+process.on('exit', function () {
+    server.stop();
+})
 
 client.on('notify', function () {
     logger('Got a notification.')
@@ -23,16 +46,20 @@ client.on('response', function (headers, statusCode, rinfo) {
     if (statusCode !== 200) {
         return
     }
-    if (!headers.USN || !(/MediaServer:[0-5]$/.test(headers.USN) || /MediaRenderer:[0-5]$/.test(headers.USN))) {
-        return
-    }
+    logger('Got a response to an m-search:\n%d\n%s\n%s', statusCode, JSON.stringify(headers, null, '  '), JSON.stringify(rinfo, null, '  '))
+    addDeviceFromSsdpHeaders(headers);
+});
+
+function addDeviceFromSsdpHeaders(headers) {
     if (!headers.LOCATION) {
         return
     }
     if (ssdpDevices[headers.USN]) {
         return;
     }
-    logger('Got a response to an m-search:\n%d\n%s\n%s', statusCode, JSON.stringify(headers, null, '  '), JSON.stringify(rinfo, null, '  '))
+    if (!headers.USN || !(/MediaServer:[0-5]$/.test(headers.USN) || /MediaRenderer:[0-5]$/.test(headers.USN))) {
+        return
+    }
     ssdpDevices[headers.USN] = axios.get(headers.LOCATION)
         .then(function (response) {
             const device = deviceFactory.createFromXml(response.data, headers.LOCATION)
@@ -45,7 +72,7 @@ client.on('response', function (headers, statusCode, rinfo) {
             logger(error);
             ssdpDevices[headers.USN] = null;
         });
-});
+}
 
 const ssdpStart = function () {
     return client.start();
