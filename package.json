@@ -1,7 +1,7 @@
 {
   "name": "muspnp",
   "productName": "muspnp",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "description": "Play your music on your devices at home.",
   "main": "main.js",
   "scripts": {
@@ -39,7 +39,7 @@
               "description": "Play your music on your devices at home.",
               "maintainer": "Samuel CHEMLA",
               "homepage": "https://github.com/phpbg/muspnp#readme",
-              "version": "1.0.1",
+              "version": "1.1.0",
               "categories": [
                 "Audio",
                 "Video",
@@ -54,7 +54,7 @@
             "options": {
               "description": "Play your music on your devices at home.",
               "homepage": "https://github.com/phpbg/muspnp#readme",
-              "version": "1.0.1",
+              "version": "1.1.0",
               "categories": [
                 "Audio",
                 "Video",
