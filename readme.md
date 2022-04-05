@@ -23,12 +23,14 @@ This is a list of servers and renderer known to work. Please send a MR to improv
 ### Renderers
 * [BubbleUPnP](https://play.google.com/store/apps/details?id=com.bubblesoft.android.bubbleupnp) (tested on android)
 * [gmrender-resurrect](https://github.com/hzeller/gmrender-resurrect)
-* [Kodi](https://kodi.tv/)
-* [Rygel](https://wiki.gnome.org/Projects/Rygel)
 * [HiFiBerryOS](https://www.hifiberry.com/hifiberryos)
+* [Kodi](https://kodi.tv/)
+* Linn Majik devices
+* [Rygel](https://wiki.gnome.org/Projects/Rygel)
 
 ### Servers
 * [BubbleUPnP (serving from android)](https://play.google.com/store/apps/details?id=com.bubblesoft.android.bubbleupnp)
+* [Gerbera](https://github.com/gerbera/gerbera)
 * [PlainUPnP](https://github.com/m3sv/PlainUPnP)
 * [Plex](https://www.plex.tv/media-server-downloads)
 * [ReadyMedia](https://sourceforge.net/projects/minidlna/)
