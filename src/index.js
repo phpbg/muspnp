@@ -17,10 +17,10 @@ function createObservableCache(sizeHint = 20) {
     const cache = {};
     const fifo = [];
     const handler = {
-        get: function(obj, prop) {
+        get: function (obj, prop) {
             return obj[prop];
         },
-        set: function(obj, prop, value) {
+        set: function (obj, prop, value) {
             obj[prop] = value;
             // Always keep track of effective cache use & remove old entries
             // This is suboptimal because we will fill the fifo with duplicates, but it should work well enough in most cases
@@ -44,9 +44,10 @@ function createObservableCache(sizeHint = 20) {
  * @returns {*}
  */
 const toDurationRegex = /([0-9]+):([0-9]+):([0-9]+)/;
+
 function toDuration(strDuration) {
     const res = toDurationRegex.exec(strDuration);
-    if (! res || res.length < 4) {
+    if (!res || res.length < 4) {
         return null;
     }
     return dayjs.duration({
@@ -57,7 +58,7 @@ function toDuration(strDuration) {
 }
 
 window.app = createApp({
-    data: function() {
+    data: function () {
         return {
             showSpinner: true,
             error: null,
@@ -87,7 +88,7 @@ window.app = createApp({
             this.searchCache = createObservableCache()
             this.selectedItem = [];
             this.searchCapabilities = null;
-            if (! device) {
+            if (!device) {
                 return;
             }
             api.selectServer({usn: device.usn})
@@ -95,7 +96,7 @@ window.app = createApp({
                 .then(() => api.getSearchCapabilities().catch(() => null))
                 .then((searchCapabilities) => {
                     if (searchCapabilities) {
-                        this.searchCapabilities = searchCapabilities.split(',').filter((prop) => ['dc:title','upnp:album','upnp:artist'].includes(prop))
+                        this.searchCapabilities = searchCapabilities.split(',').filter((prop) => ['dc:title', 'upnp:album', 'upnp:artist'].includes(prop))
                     }
                 })
                 .then(() => this.showSpinner = false)
@@ -117,7 +118,7 @@ window.app = createApp({
                     }
                 })
                 .then(() => {
-                    if (! device) {
+                    if (!device) {
                         return;
                     }
                     return api.getVolume()
@@ -147,7 +148,7 @@ window.app = createApp({
             get(target, propKey) {
                 // Proxy API for automatic error cleanup
                 // NB: api is a frozen object so we're a bit restricted here...
-                if (! ['getPositionInfo', 'getTransportInfo'].includes(propKey)) {
+                if (!['getPositionInfo', 'getTransportInfo'].includes(propKey)) {
                     app.error = null;
                 }
                 return target[propKey];
@@ -271,7 +272,7 @@ window.app = createApp({
         },
         selectItem: function (item) {
             if (item['upnp:class'].startsWith('object.container')) {
-                if (! this.searchTerm) {
+                if (!this.searchTerm) {
                     item._scrollTop = document.documentElement.scrollTop
                 }
                 this.searchTerm = null;
@@ -360,7 +361,7 @@ window.app = createApp({
                     if (parseInt(result.TotalMatches) === 0 && search.indexOf(' ') >= 0) {
                         const searchStr = search
                             .split(' ')
-                            .filter(term => term.length>0)
+                            .filter(term => term.length > 0)
                             .map((term) => '( ' + this.searchCapabilities.map(sc => `${sc} contains "${term}"`).join(' or ') + ' )')
                             .join(' and ')
                         return api
@@ -416,6 +417,26 @@ window.app = createApp({
                 return '🖼';
             }
             return '[]';
+        },
+        /**
+         * Data coming from soap responses is xml encoded
+         * Each entry may be an array, and may contain attributes or be plain text
+         * Example 1 :
+         *     "upnp:artist": [
+         *          "Donovan",
+         *           {
+         *               "#text": "various",
+         *               "@_role": "AlbumArtist"
+         *           }
+         *      ],
+         * Example 2:
+         *      "upnp:artist": "Donovan"
+         * @param data
+         * @returns {string}
+         */
+        toStringFromXmlObj: function (data) {
+            const dataArr = data == null ? [] : Array.isArray(data) ? data : [data];
+            return dataArr.map(el => typeof el === "string" ? el : el['#text'] || '').join(', ');
         }
     }
 }).mount('#app')

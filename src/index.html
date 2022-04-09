@@ -53,7 +53,7 @@
     </div>
     <h2 v-if="currentMediaServer">
         <button @click="back" :disabled="currentContainer == null" class="standardized-emoji icon">⬅️</button>
-        <span v-if="currentContainer">{{ currentContainer['dc:title'] }}</span>
+        <span v-if="currentContainer" v-html="currentContainer['dc:title']"></span>
         <span v-if="!currentContainer">{{ currentMediaServer.name }}</span>
     </h2>
     <input id="search" v-if="currentMediaServer && searchCapabilities" v-model="searchTerm" placeholder="search">
@@ -65,7 +65,7 @@
             <div>
                 <div v-html="item['dc:title']"></div><!-- Use v-html because some metadata may contain html -->
                 <div class="font-italic font-xsmall" v-if="item['upnp:artist'] || item['upnp:album']">
-                    {{ item['upnp:artist'] }} - {{ item['upnp:album'] }}
+                    <span v-html="toStringFromXmlObj(item['upnp:artist'])"></span><span v-if="item['upnp:artist'] && item['upnp:album']"> - </span><span v-html="item['upnp:album']"></span>
                 </div>
             </div>
         </li>
