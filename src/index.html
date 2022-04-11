@@ -61,11 +61,11 @@
         <li v-for="item in libraryObjects" @click="selectItem(item)"
             :class="{ playing: item['@_id'] === currentPlayingItem?.['@_id'] }" :ref="item['@_id']">
             <div class="icon .standardized-emoji" v-if="!item['upnp:albumArtURI']">{{ toIcon(item) }}</div>
-            <img class="icon icon-size" v-if="item['upnp:albumArtURI']" :src="item['upnp:albumArtURI']['#text']" :alt="toIcon(item)"/>
+            <img class="icon icon-size" v-if="item['upnp:albumArtURI']" :src="toStringFromXmlObject(item['upnp:albumArtURI'])" :alt="toIcon(item)"/>
             <div>
                 <div v-html="item['dc:title']"></div><!-- Use v-html because some metadata may contain html -->
                 <div class="font-italic font-xsmall" v-if="item['upnp:artist'] || item['upnp:album']">
-                    <span v-html="toStringFromXmlObj(item['upnp:artist'])"></span><span v-if="item['upnp:artist'] && item['upnp:album']"> - </span><span v-html="item['upnp:album']"></span>
+                    <span v-html="toStringFromXmlArray(item['upnp:artist'])"></span><span v-if="item['upnp:artist'] && item['upnp:album']"> - </span><span v-html="item['upnp:album']"></span>
                 </div>
             </div>
         </li>

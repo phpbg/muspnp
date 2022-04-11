@@ -290,7 +290,7 @@ window.app = createApp({
         _play(item) {
             this.currentPlayingItem = item;
             return api
-                .play({id: item['@_id'], uri: item?.res?.['#text']})
+                .play({id: item['@_id'], uri: this.toStringFromXmlObject(item?.res)})
                 .then(() => this.startRefresh())
                 .catch(err => {
                     this.currentPlayingItem = null;
@@ -420,7 +420,7 @@ window.app = createApp({
         },
         /**
          * Data coming from soap responses is xml encoded
-         * Each entry may be an array, and may contain attributes or be plain text
+         * An entry may be a string, an object or an array of both
          * Example 1 :
          *     "upnp:artist": [
          *          "Donovan",
@@ -434,9 +434,17 @@ window.app = createApp({
          * @param data
          * @returns {string}
          */
-        toStringFromXmlObj: function (data) {
+        toStringFromXmlArray: function (data) {
             const dataArr = data == null ? [] : Array.isArray(data) ? data : [data];
-            return dataArr.map(el => typeof el === "string" ? el : el['#text'] || '').join(', ');
+            return dataArr.map(el => this.toStringFromXmlObject(el)).join(', ');
+        },
+        /**
+         * @see toStringFromXmlArray
+         * @param {object|string} data
+         * @returns {string}
+         */
+        toStringFromXmlObject: function(data) {
+            return typeof data === "string" ? data : data['#text'] || '';
         }
     }
 }).mount('#app')
