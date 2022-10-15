@@ -1,6 +1,8 @@
 'use strict';
 
-const xmlParser = require("fast-xml-parser");
+const { XMLParser } = require('fast-xml-parser');
+const xmlParser = new XMLParser({ignoreAttributes: false, removeNSPrefix: true, processEntities: false});
+const xmlParserWithNs = new XMLParser({ignoreAttributes: false, removeNSPrefix: false, processEntities: false});
 const Device = require("./Device");
 const toArray = require("./toArray");
 const axios = require('./axios');
@@ -43,10 +45,10 @@ class MediaServer extends Device {
         })
             .catch(soapErrHandler)
             .then((response) => {
-                const data = xmlParser.parse(response.data, {ignoreAttributes: false, ignoreNameSpace: true});
+                const data = xmlParser.parse(response.data);
                 const browseResponse = data?.Envelope?.Body?.BrowseResponse;
                 const didlResult = _.unescape(browseResponse?.Result);
-                const result = xmlParser.parse(didlResult, {ignoreAttributes: false});
+                const result = xmlParserWithNs.parse(didlResult);
                 const container = toArray(result["DIDL-Lite"].container);
                 container.push(...(toArray(result["DIDL-Lite"].item)));
                 browseResponse.Result = container;
@@ -84,10 +86,10 @@ class MediaServer extends Device {
         })
             .catch(soapErrHandler)
             .then((response) => {
-                const data = xmlParser.parse(response.data, {ignoreAttributes: false, ignoreNameSpace: true});
+                const data = xmlParser.parse(response.data);
                 const browseResponse = data?.Envelope?.Body?.BrowseResponse;
                 const didlResult = _.unescape(browseResponse?.Result);
-                const result = xmlParser.parse(didlResult, {ignoreAttributes: false});
+                const result = xmlParserWithNs.parse(didlResult);
                 return {
                     object: result["DIDL-Lite"].container || result["DIDL-Lite"].item,
                     xml: browseResponse?.Result
@@ -117,7 +119,7 @@ class MediaServer extends Device {
         })
             .catch(soapErrHandler)
             .then((response) => {
-                const data = xmlParser.parse(response.data, {ignoreAttributes: false, ignoreNameSpace: true});
+                const data = xmlParser.parse(response.data);
                 return data?.Envelope?.Body?.GetSearchCapabilitiesResponse?.SearchCaps;
             });
     }
@@ -147,10 +149,10 @@ class MediaServer extends Device {
         })
             .catch(soapErrHandler)
             .then((response) => {
-                const data = xmlParser.parse(response.data, {ignoreAttributes: false, ignoreNameSpace: true});
+                const data = xmlParser.parse(response.data);
                 const searchResponse = data?.Envelope?.Body?.SearchResponse;
                 const didlResult = _.unescape(searchResponse?.Result);
-                const result = xmlParser.parse(didlResult, {ignoreAttributes: false});
+                const result = xmlParserWithNs.parse(didlResult);
                 const container = toArray(result["DIDL-Lite"].container);
                 container.push(...(toArray(result["DIDL-Lite"].item)));
                 searchResponse.Result = container;

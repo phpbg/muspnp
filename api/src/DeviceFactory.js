@@ -1,6 +1,7 @@
 'use strict';
 
-const xmlParser = require('fast-xml-parser');
+const { XMLParser } = require('fast-xml-parser');
+const xmlParser = new XMLParser({ignoreAttributes: false, removeNSPrefix: true, processEntities: false});
 const MediaServer = require('./MediaServer');
 const MediaRenderer = require('./MediaRenderer');
 const deviceQuirks = require('./deviceQuirks');

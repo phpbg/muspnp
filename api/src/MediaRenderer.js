@@ -1,7 +1,8 @@
 'use strict';
 
 const Device = require("./Device");
-const xmlParser = require("fast-xml-parser");
+const { XMLParser } = require('fast-xml-parser');
+const xmlParser = new XMLParser({ignoreAttributes: false, removeNSPrefix: true, processEntities: false});
 const axios = require('./axios');
 const soapErrHandler = require('./soapErrHandler');
 
@@ -178,7 +179,7 @@ class MediaRenderer extends Device {
         })
             .catch(soapErrHandler)
             .then(response => {
-                const data = xmlParser.parse(response.data, {ignoreAttributes: false, ignoreNameSpace: true});
+                const data = xmlParser.parse(response.data);
                 const info = data?.Envelope?.Body?.GetPositionInfoResponse;
                 if (info == null) {
                     throw new Error(`Unexpected response from AVTransport: ${response.data}`)
@@ -211,7 +212,7 @@ class MediaRenderer extends Device {
         })
             .catch(soapErrHandler)
             .then(response => {
-                const data = xmlParser.parse(response.data, {ignoreAttributes: false, ignoreNameSpace: true});
+                const data = xmlParser.parse(response.data);
                 const info = data?.Envelope?.Body?.GetTransportInfoResponse;
                 if (info == null) {
                     throw new Error(`Unexpected response from AVTransport: ${response.data}`)
@@ -245,7 +246,7 @@ class MediaRenderer extends Device {
         })
             .catch(soapErrHandler)
             .then(response => {
-                const data = xmlParser.parse(response.data, {ignoreAttributes: false, ignoreNameSpace: true});
+                const data = xmlParser.parse(response.data);
                 const info = data?.Envelope?.Body?.GetVolumeDBRangeResponse;
                 if (info == null) {
                     throw new Error(`Unexpected response from RenderingControl: ${response.data}`)
@@ -278,7 +279,7 @@ class MediaRenderer extends Device {
         })
             .catch(soapErrHandler)
             .then(response => {
-                const data = xmlParser.parse(response.data, {ignoreAttributes: false, ignoreNameSpace: true});
+                const data = xmlParser.parse(response.data);
                 const info = data?.Envelope?.Body?.GetVolumeDBResponse?.CurrentVolumeDB || data?.Envelope?.Body?.GetVolumeDBResponse?.CurrentVolume;
                 if (info == null) {
                     throw new Error(`Unexpected response from RenderingControl: ${response.data}`)
@@ -311,7 +312,7 @@ class MediaRenderer extends Device {
         })
             .catch(soapErrHandler)
             .then(response => {
-                const data = xmlParser.parse(response.data, {ignoreAttributes: false, ignoreNameSpace: true});
+                const data = xmlParser.parse(response.data);
                 const info = data?.Envelope?.Body?.GetVolumeResponse?.CurrentVolume;
                 if (info == null) {
                     throw new Error(`Unexpected response from RenderingControl: ${response.data}`)
