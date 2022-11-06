@@ -14,8 +14,7 @@ Although it is primarily meant for audio files, you can also use it to browse/wa
 * [Windows](https://github.com/phpbg/muspnp/releases/download/1.2.0/muspnp-1.2.0.Setup.exe)
 * [Linux deb](https://github.com/phpbg/muspnp/releases/download/1.2.0/muspnp_1.2.0_amd64.deb)
 * [Linux rpm](https://github.com/phpbg/muspnp/releases/download/1.2.0/muspnp-1.2.0-1.x86_64.rpm)
-* [MacOS apple silicon](https://github.com/phpbg/muspnp/releases/download/1.2.1/muspnp-darwin-arm64-1.2.1.zip)
-* MacOS intel : builds are not provided, but you can compile it easily (see [steps below](#build-instructions))
+* MacOS : builds are not provided, but you can compile it easily (see [steps below](#build-instructions))
 
 ## Compatibility
 
