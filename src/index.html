@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self';script-src 'unsafe-eval' 'self';img-src *">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self';script-src 'unsafe-eval' 'self';img-src *;media-src http: https:">
     <title>MusPNP</title>
     <link rel="stylesheet" href="index.css">
     <link rel="stylesheet" href="spinner.css">
@@ -71,6 +71,7 @@
         </li>
     </ol>
 </div>
+<audio id="localAudio"></audio>
 <script src="../node_modules/dayjs/dayjs.min.js"></script>
 <script src="../node_modules/dayjs/plugin/duration.js"></script>
 <script type="module" src="index.js"></script>

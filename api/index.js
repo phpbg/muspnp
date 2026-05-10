@@ -11,8 +11,13 @@ const eventEmitter = new EventEmitter();
 const deviceFactory = require('./src/DeviceFactory');
 const MediaServer = require('./src/MediaServer');
 const MediaRenderer = require('./src/MediaRenderer');
+const LocalRenderer = require('./src/LocalRenderer');
+const LOCAL_RENDERER_USN = 'local::urn:schemas-upnp-org:device:MediaRenderer:1';
+const localRenderer = new LocalRenderer();
 
 const ssdpDevices = {};
+ssdpDevices[LOCAL_RENDERER_USN] = localRenderer;
+
 let currentMediaServer;
 let currentMediaRenderer;
 
@@ -87,9 +92,9 @@ const ssdpSearch = function () {
     client.search('ssdp:all');
 }
 
-const _getDevices = function (type) {
+const _getDevices = function (...types) {
     return Object.keys(ssdpDevices)
-        .filter(usn => ssdpDevices[usn] instanceof type)
+        .filter(usn => types.some(type => ssdpDevices[usn] instanceof type))
         .map(usn => {
             return {
                 usn,
@@ -103,7 +108,7 @@ const _getDevices = function (type) {
  * @returns {{usn: *, name: *}[]}
  */
 const getRenderers = function () {
-    return _getDevices(MediaRenderer);
+    return _getDevices(MediaRenderer, LocalRenderer);
 }
 
 /**
@@ -280,6 +285,10 @@ const setVolume = function ({desiredVolume}) {
         .then(() => currentMediaRenderer.setVolume({instanceID: 0, desiredVolume}));
 }
 
+const setLocalRendererWindow = function (mainWindow) {
+    localRenderer.setMainWindow(mainWindow);
+}
+
 module.exports = {
     browse,
     play,
@@ -303,4 +312,5 @@ module.exports = {
     getVolumeDB,
     getVolume,
     setVolume,
+    setLocalRendererWindow,
 }

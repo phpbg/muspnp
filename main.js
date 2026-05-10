@@ -36,8 +36,13 @@ const createWindow = () => {
         }
     });
 
+    mainWindow.webContents.openDevTools()
+
     // and load the index.html of the app.
     mainWindow.loadFile(path.join(__dirname, 'src', 'index.html'));
+
+    // Register the local renderer with the main window for audio playback
+    getUpnpApi().setLocalRendererWindow(mainWindow);
 
     // Open the DevTools.
     if (process.env.NODE_ENV === 'dev') {
@@ -124,4 +129,3 @@ app.on('window-all-closed', () => {
         app.quit();
     })
 });
-
