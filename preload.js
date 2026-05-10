@@ -22,8 +22,8 @@ window.addEventListener('DOMContentLoaded', () => {
     }
 
     // Handle query requests from main process via IPC invoke
-    ipcRenderer.on('localGetPositionInfo', (event) => {
-        event.sender.send('localGetPositionInfo:reply', {
+    ipcRenderer.on('localGetPositionInfo', () => {
+        ipcRenderer.send('localGetPositionInfo:reply', {
             Track: 1,
             TrackDuration: formatTime(audio.duration || 0),
             TrackMetaData: '',
@@ -35,21 +35,21 @@ window.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    ipcRenderer.on('localGetTransportInfo', (event) => {
+    ipcRenderer.on('localGetTransportInfo', () => {
         let state = 'STOPPED';
         if (!audio.src) state = 'NO_MEDIA_PRESENT';
         else if (audio.ended) state = 'STOPPED';
         else if (!audio.paused) state = 'PLAYING';
         else if (audio.paused && audio.currentTime > 0) state = 'PAUSED_PLAYBACK';
-        event.sender.send('localGetTransportInfo:reply', {
+        ipcRenderer.send('localGetTransportInfo:reply', {
             CurrentTransportState: state,
             CurrentTransportStatus: 'OK',
             CurrentSpeed: 1
         });
     });
 
-    ipcRenderer.on('localGetVolume', (event) => {
-        event.sender.send('localGetVolume:reply', Math.round(audio.volume * 100));
+    ipcRenderer.on('localGetVolume', () => {
+        ipcRenderer.send('localGetVolume:reply', Math.round(audio.volume * 100));
     });
 
     ipcRenderer.on('localSetURI', (event, uri) => {

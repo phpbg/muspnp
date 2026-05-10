@@ -16,56 +16,6 @@
   "author": "Samuel CHEMLA",
   "license": "MIT",
   "homepage": "https://github.com/phpbg/muspnp#readme",
-  "config": {
-    "forge": {
-      "packagerConfig": {},
-      "makers": [
-        {
-          "name": "@electron-forge/maker-squirrel",
-          "config": {
-            "name": "muspnp"
-          }
-        },
-        {
-          "name": "@electron-forge/maker-zip",
-          "platforms": [
-            "darwin"
-          ]
-        },
-        {
-          "name": "@electron-forge/maker-deb",
-          "config": {
-            "options": {
-              "description": "Play your music on your devices at home.",
-              "maintainer": "Samuel CHEMLA",
-              "homepage": "https://github.com/phpbg/muspnp#readme",
-              "version": "1.2.1",
-              "categories": [
-                "Audio",
-                "Video",
-                "AudioVideo"
-              ]
-            }
-          }
-        },
-        {
-          "name": "@electron-forge/maker-rpm",
-          "config": {
-            "options": {
-              "description": "Play your music on your devices at home.",
-              "homepage": "https://github.com/phpbg/muspnp#readme",
-              "version": "1.2.1",
-              "categories": [
-                "Audio",
-                "Video",
-                "AudioVideo"
-              ]
-            }
-          }
-        }
-      ]
-    }
-  },
   "dependencies": {
     "axios": "^1.16.0",
     "dayjs": "^1.11.5",
@@ -77,12 +27,12 @@
     "vue": "^3.2.41"
   },
   "devDependencies": {
-    "@electron-forge/cli": "^6.0.0-beta.67",
-    "@electron-forge/maker-deb": "^6.0.0-beta.67",
-    "@electron-forge/maker-rpm": "^6.0.0-beta.67",
-    "@electron-forge/maker-squirrel": "^6.0.0-beta.67",
-    "@electron-forge/maker-zip": "^6.0.0-beta.67",
-    "electron": "^21.1.1",
+    "@electron-forge/cli": "^7.0.0",
+    "@electron-forge/maker-deb": "^7.0.0",
+    "@electron-forge/maker-rpm": "^7.0.0",
+    "@electron-forge/maker-squirrel": "^7.0.0",
+    "@electron-forge/maker-zip": "^7.0.0",
+    "electron": "^42.0.0",
     "eslint": "^8.25.0",
     "mocha": "^10.0.0",
     "nock": "^13.2.9"
