@@ -20,7 +20,7 @@
     "axios": "^1.16.0",
     "dayjs": "^1.11.5",
     "electron-squirrel-startup": "^1.0.0",
-    "fast-xml-parser": "^4.0.11",
+    "fast-xml-parser": "^5.7.3",
     "lodash": "^4.17.21",
     "lodash-es": "^4.17.21",
     "node-ssdp": "^4.0.1",
