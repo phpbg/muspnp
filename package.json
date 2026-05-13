@@ -12,6 +12,7 @@
     "lint": "eslint",
     "test": "mocha api/test/*.js"
   },
+  "type": "commonjs",
   "keywords": [],
   "author": "Samuel CHEMLA",
   "license": "MIT",
